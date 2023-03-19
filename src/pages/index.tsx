@@ -1,15 +1,13 @@
-import { getUserMe } from '@/api/user';
 import { ENV } from '@/config/env';
 import { useEffect } from 'react';
+import headerLayout from '@/components/layout/headerLayout';
+import Document, { DocumentContext } from 'next/document';
+import { ServerStyleSheet } from 'styled-components';
 
 export default function Home() {
-
     const handleKakaoLoginClick = async () => window.location.replace(`https://kauth.kakao.com/oauth/authorize?client_id=${ENV.KAKAO_ID}&redirect_uri=${ENV.REDIRECT_URI}&response_type=code`);
     useEffect(() => {
         (async () => {
-			
-            const res = await getUserMe();
-            console.log(res);
         })();
     }, []);
     return (
@@ -18,3 +16,9 @@ export default function Home() {
         </div>
     );
 }
+
+
+
+
+Home.getLayout = headerLayout;
+	

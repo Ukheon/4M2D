@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
+import { connectMongo } from '@/utils/connectMongo';
+import { user } from '@/modles/models';
+import { CODE } from '@/config/code';
 
 
 
@@ -42,6 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
         const { access_token } = req.cookies;
 		
+        if (!access_token) res.status(200).json({ code: CODE.failed, message: '유효하지 않은 토큰' });
         const userMe_url = 'https://kapi.kakao.com/v2/user/me';
         const userRes = await axios.get<IKakaoUser>(userMe_url, {
             headers: {
@@ -50,12 +54,30 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
         }).then((res) => res.data);
 		
+        if (!userRes) res.status(200).json({ code: CODE.failed, message: '유저 정보 없음' });
+        await connectMongo();
+        
+        const userInfo = await user.findOne({ id: userRes.id });
 
+        if (!userInfo) {
+            const userConfig = {
+                id: userRes.id,
+                nickname: userRes.properties.nickname,
+                email: userRes.kakao_account.email,
+                thumbnail_image_url: userRes.properties.thumbnail_image
+            };
+            await user.create(userConfig);
+            console.log('유저 생성');
+            res.status(200).json({ code: CODE.success, result: userConfig });
+            res.end();
+        }
+		
+		
 
 
         res.status(200).json({
             code: 2000, result: {
-                user: userRes,
+                user: userInfo,
             } });
     }
     res.status(404);

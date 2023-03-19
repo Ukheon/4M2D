@@ -17,7 +17,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": "./",
     "incremental": true,
     "paths": {
       "@/*": [
@@ -33,4 +32,7 @@
   "exclude": [
     "node_modules"
   ]
+  //   "exclude": [
+  //     "node_modules"
+  //   ]
 }

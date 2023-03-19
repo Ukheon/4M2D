@@ -31,7 +31,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
             }
         }).then((res) => res);
 		
-        console.log(tokenRes.access_token, '토큰 생성?');
         res.setHeader('Set-cookie', `access_token=${tokenRes.access_token}; Path=/`);
         res.status(200).redirect('http://localhost:3000');
     } else {
